@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const ITEMS_PER_PAGE = 5; // Number of items per page
+const ITEMS_PER_PAGE = 100; // Number of items per page
 
 const getAllStartups = async (req,res)=> {
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not specified
