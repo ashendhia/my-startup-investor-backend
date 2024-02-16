@@ -8,11 +8,42 @@ datasource db {
 }
 
 model startup {
-  id                Int    @id
-  name              String @db.VarChar(50)
-  sector            String @db.VarChar(50)
+  id                Int           @id @default(autoincrement())
+  name              String        @db.VarChar(50)
+  sector            String        @db.VarChar(50)
   marketCap         Int
   activeYears       Int
-  region            String @db.VarChar(20)
+  region            String        @db.VarChar(20)
   numberOfInvestors Int
+  longitude         Decimal       @db.Decimal(10, 8)
+  latitude          Decimal       @db.Decimal(10, 8)
+  email             String?       @db.VarChar(50)
+  hashedPassword    String?       @db.VarChar(255)
+  investors         investments[]
+}
+
+model investor {
+  id             Int           @id @default(autoincrement())
+  firstName      String        @db.VarChar(50)
+  lastName       String        @db.VarChar(50)
+  email          String        @db.VarChar(50)
+  hashedPassword String        @db.VarChar(255)
+  phoneNumber    String        @db.VarChar(50)
+  city           String        @db.VarChar(50)
+  zipCode        String        @db.VarChar(50)
+  adresse        String        @db.VarChar(100)
+  description    String        @db.VarChar(255)
+  fundedStartups investments[]
+}
+
+model investments {
+  investorId     Int
+  startupId      Int
+  investmentDate DateTime @db.Date
+  amount         Int
+  status         Boolean  @default(false)
+  startup        startup  @relation(fields: [startupId], references: [id])
+  investor       investor @relation(fields: [investorId], references: [id])
+
+  @@id([investorId, startupId,investmentDate])
 }

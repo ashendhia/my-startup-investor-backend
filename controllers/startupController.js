@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const ITEMS_PER_PAGE = 10; // Number of items per page
+const ITEMS_PER_PAGE = 5; // Number of items per page
 
 const getAllStartups = async (req,res)=> {
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not specified
@@ -90,9 +90,48 @@ const getStartupDistinctSectors =  async(req,res) => {
       throw error;
     }
   }
+
+const getStartupFundingInvestors = async (req, res) => {
+    try {
+        const startupId = parseInt(req.params.startupId);
+        const fundingInvestors = await prisma.investments.findMany({
+            where: {
+                startupId: startupId,
+                status: true,
+            },
+            select: {
+                startupId: true,
+                amount: true,
+                investor: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        phoneNumber: true,
+                        city: true,
+                        zipCode: true,
+                        adresse: true,
+                        description: true,
+                    },
+                },
+            },
+            orderBy: {
+                amount: 'asc',
+            },
+        });
+        res.status(200).json(fundingInvestors);
+    } catch (error) {
+        // Handle error
+        console.error('Error fetching investors', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getAllStartups,
     getStartupsBySector,
     getStartupsByName,
-    getStartupDistinctSectors
-};
+    getStartupDistinctSectors,
+    getStartupFundingInvestors
+};  

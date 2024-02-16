@@ -14,4 +14,7 @@ router.get('/search', startupController.getStartupsByName);
 // Route for fetching the economic sectors
 router.get('/distinct', startupController.getStartupDistinctSectors);
 
+// Route for fetching the investors that partnered with a startup
+router.get('/fundingInvestors/:startupId', startupController.getStartupFundingInvestors);
+
 module.exports = router;
