@@ -6,5 +6,6 @@ const investorController = require('../controllers/investorController');
 router.get('/', investorController.getAllInvestors);
 router.get('/fundedStartups/:investorId', investorController.getInvestorFundedStartups);
 router.get('/fundingRequests/:investorId', investorController.getInvestorFundingRequests);
+router.post('/', investorController.postInvestor);
 
 module.exports = router;
