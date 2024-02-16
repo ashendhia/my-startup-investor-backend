@@ -1,9 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const jwt = require('jsonwebtoken')
+const bcrypt = require("bcrypt")
 
 const ITEMS_PER_PAGE = 5; // Number of items per page
 
-const getAllStartups = async (req,res)=> {
+const getAllStartups = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not specified
     try {
         const startIndex = (page - 1) * ITEMS_PER_PAGE;
@@ -74,22 +76,22 @@ const getStartupsByName = async (req, res) => {
     }
 };
 
-const getStartupDistinctSectors =  async(req,res) => {
+const getStartupDistinctSectors = async (req, res) => {
     try {
-      const distinctSectors = await prisma.startup.findMany({
-        distinct: ['sector'],
-        select: {
-          sector: true
-        }
-      });
-  
-      let result = distinctSectors.map(entry => entry.sector);
-      res.status(200).json(result);
+        const distinctSectors = await prisma.startup.findMany({
+            distinct: ['sector'],
+            select: {
+                sector: true
+            }
+        });
+
+        let result = distinctSectors.map(entry => entry.sector);
+        res.status(200).json(result);
     } catch (error) {
-      console.error('Error fetching distinct sectors:', error);
-      throw error;
+        console.error('Error fetching distinct sectors:', error);
+        throw error;
     }
-  }
+}
 
 const getStartupFundingInvestors = async (req, res) => {
     try {
@@ -128,10 +130,101 @@ const getStartupFundingInvestors = async (req, res) => {
     }
 };
 
+const postStartup = async (req, res) => {
+    const { name, sector, marketCap, activeYears, region, numberOfInvestors, longitude, latitude, email, password } = req.body
+
+    const existingUser = await prisma.startup.findUnique({
+        where: {
+            email: email
+        }
+    })
+
+    if (existingUser) {
+        return res.status(400).json({
+            error: 'Un seul compte par adresse email'
+        })
+    }
+
+    else if (password.length < 3) {
+        return res.status(400).json({
+            error: 'password less than 3 characters'
+        })
+    }
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
+
+    const startup = {
+        name,
+        sector,
+        marketCap,
+        activeYears,
+        region,
+        numberOfInvestors,
+        longitude,
+        latitude,
+        email,
+        password: passwordHash
+    }
+
+    const savedStartup = await prisma.startup.create({
+        data: startup
+    })
+
+    res.status(201).json(savedStartup)
+
+}
+
+const loginStartup = async (req, res) => {
+
+    const { email, password } = req.body
+
+    const startup = await prisma.startup.findUnique({
+        where: {
+            email: email
+        }
+    })
+
+    const passwordCorrect = startup === null
+        ? false
+        : await bcrypt.compare(password, startup.hashedPassword)
+
+    if (!(startup && passwordCorrect)) {
+        return res.status(401).json({
+            error: 'invalid username or password'
+        })
+    }
+
+    const startupWithoutPass = {
+        id: startup.id,
+        name: startup.name,
+        email: startup.email,
+        sector: startup.sector,
+        marketCap: startup.marketCap,
+        activeYears: startup.activeYears,
+        region: startup.region,
+        numberOfInvestors: startup.numberOfInvestors,
+        longitude: startup.longitude,
+        latitude: startup.latitude,
+    }
+
+    const startupForToken = {
+        id: startup.id,
+        email: startup.email,
+    }
+
+    const token = jwt.sign(startupForToken, process.env.SECRET)
+
+    res
+        .status(200)
+        .send({ token, startupWithoutPass })
+}
+
 module.exports = {
     getAllStartups,
     getStartupsBySector,
     getStartupsByName,
     getStartupDistinctSectors,
-    getStartupFundingInvestors
+    getStartupFundingInvestors,
+    postStartup,
+    loginStartup
 };  
