@@ -7,5 +7,6 @@ router.get('/', investorController.getAllInvestors);
 router.get('/fundedStartups/:investorId', investorController.getInvestorFundedStartups);
 router.get('/fundingRequests/:investorId', investorController.getInvestorFundingRequests);
 router.post('/', investorController.postInvestor);
+router.post('/login', investorController.loginInvestor)
 
 module.exports = router;

@@ -5,22 +5,24 @@ const investments =  require('./investments')
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function main(){
-    for(let investor of investors){
-        await prisma.investor.create({
-            data: investor
-        })
-    }
-    for(let startup of startups){
-        await prisma.startup.create({
-            data: startup
-        })
-    }
-    for(let investment of investments){
-        await prisma.investments.create({
-            data: investment
-        })
-    }
+async function main() {
+  await prisma.investments.deleteMany();
+  await prisma.$queryRaw`ALTER TABLE investments AUTO_INCREMENT = 1`;
+  await prisma.startup.deleteMany();
+  await prisma.$queryRaw`ALTER TABLE startup AUTO_INCREMENT = 1`;
+  await prisma.investor.deleteMany();
+  await prisma.$queryRaw`ALTER TABLE investor AUTO_INCREMENT = 1`;
+    await prisma.investor.createMany({
+        data: investors
+    })
+
+    await prisma.startup.createMany({
+        data: startups
+    })
+
+    await prisma.investments.createMany({
+        data: investments
+    })
 }
 
 main().catch(e=>{
