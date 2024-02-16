@@ -18,7 +18,7 @@ model startup {
   numberOfInvestors Int
   longitude         Decimal       @db.Decimal(10, 8)
   latitude          Decimal       @db.Decimal(10, 8)
-  email             String?       @db.VarChar(50)
+  email             String?       @unique @db.VarChar(50)
   hashedPassword    String?       @db.VarChar(255)
   investors         investments[]
 }
