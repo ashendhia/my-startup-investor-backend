@@ -1,4 +1,4 @@
-#This the server for our platform it supports the functionlaities destined for the investors as well as startups
+#This the server for our platform it supports the functionalities destined for the investors as well as startups
 #To launch this server sucessfully we recommend the following steps (we suppose that the project is fully local and nothing is deployed): 
 1- clone the repository into your local machine 
 2- run the command npm i to install the necessary packages
