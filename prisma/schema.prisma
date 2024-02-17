@@ -9,18 +9,17 @@ generator client {
 }
 
 model startup {
-  id                Int           @id @default(autoincrement())
-  name              String        @db.VarChar(50)
-  sector            String        @db.VarChar(50)
-  marketCap         Int
-  activeYears       Int
-  region            String        @db.VarChar(20)
-  numberOfInvestors Int
-  longitude         Decimal       @db.Decimal(10, 8)
-  latitude          Decimal       @db.Decimal(10, 8)
-  email             String        @unique @db.VarChar(50)
-  hashedPassword    String?       @db.VarChar(255)
-  investors         investments[]
+  id             Int           @id @default(autoincrement())
+  name           String        @db.VarChar(50)
+  sector         String        @db.VarChar(50)
+  marketCap      Int
+  activeYears    Int
+  region         String        @db.VarChar(20)
+  longitude      Decimal       @db.Decimal(10, 8)
+  latitude       Decimal       @db.Decimal(10, 8)
+  email          String        @unique @db.VarChar(50)
+  hashedPassword String        @db.VarChar(255)
+  investors      investments[]
 }
 
 model investor {
