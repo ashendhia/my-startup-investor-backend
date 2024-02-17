@@ -47,3 +47,5 @@ model investments {
 
   @@id([investorId, startupId, investmentDate])
 }
+
+// win gg
