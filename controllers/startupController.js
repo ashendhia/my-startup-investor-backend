@@ -163,7 +163,7 @@ const postStartup = async (req, res) => {
         longitude,
         latitude,
         email,
-        password: passwordHash
+        hashedPassword: passwordHash
     }
 
     const savedStartup = await prisma.startup.create({
